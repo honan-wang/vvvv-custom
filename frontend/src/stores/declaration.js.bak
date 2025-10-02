@@ -1,0 +1,388 @@
+﻿import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { 
+  getDeclarationList, 
+  getDeclarationDetail, 
+  saveDeclaration,
+  saveEmptyVehicleDeclaration,
+  submitDeclaration,
+  getTemplateList,
+  saveTemplate
+} from '@/api/declaration'
+
+export const useDeclarationStore = defineStore('declaration', () => {
+  // 鐘舵€?  const declarationList = ref([])
+  const currentDeclaration = ref(null)
+  const templates = ref([])
+  const loading = ref(false)
+  
+  // 鑾峰彇鐢虫姤鍗曞垪琛?  const fetchDeclarationList = async (params = {}) => {
+    loading.value = true
+    try {
+      // 妯℃嫙鏁版嵁锛堢敤浜庢紨绀猴級
+      const mockData = {
+        success: true,
+        data: {
+          list: [
+            {
+              dischargedNo: 'HF202401150001',
+              carNo: '绮12345',
+              mainGoods: '鐢靛瓙浜у搧銆佹湇瑁呫€佺帺鍏风瓑',
+              ieMark: 'I',
+              status: 'draft',
+              createDate: '2024-01-15 09:30:00',
+              createPerson: '寮犱笁'
+            },
+            {
+              dischargedNo: 'HF202401150002',
+              carNo: '绮67890',
+              mainGoods: '鏈烘璁惧銆佷簲閲戦厤浠?',
+              ieMark: 'E',
+              status: 'submitted',
+              createDate: '2024-01-15 10:15:00',
+              createPerson: '鏉庡洓'
+            },
+            {
+              dischargedNo: 'HF202401150003',
+              carNo: '绮11111',
+              mainGoods: '鍖栧伐鍘熸枡銆佸鏂欏埗鍝?,
+              ieMark: 'I',
+              status: 'approved',
+              createDate: '2024-01-15 11:00:00',
+              createPerson: '鐜嬩簲'
+            },
+            {
+              dischargedNo: 'HF202401150004',
+              carNo: '绮22222',
+              mainGoods: '绾虹粐鍝併€侀瀷绫?,
+              ieMark: 'E',
+              status: 'reviewing',
+              createDate: '2024-01-15 14:20:00',
+              createPerson: '璧靛叚'
+            },
+            {
+              dischargedNo: 'HF202401150005',
+              carNo: '绮33333',
+              mainGoods: '椋熷搧銆侀ギ鏂?,
+              ieMark: 'I',
+              status: 'rejected',
+              createDate: '2024-01-15 15:45:00',
+              createPerson: '瀛欎竷'
+            }
+          ],
+          total: 5,
+          page: params.page || 1,
+          size: params.size || 20
+        }
+      }
+      
+      declarationList.value = mockData.data.list || []
+      return mockData.data
+      
+      // 鍘熷API璋冪敤浠ｇ爜锛堝綋鍚庣API鍑嗗濂藉悗鍚敤锛?      // const response = await getDeclarationList(params)
+      // if (response.success) {
+      //   declarationList.value = response.data.list || []
+      //   return response.data
+      // }
+    } catch (error) {
+      console.error('鑾峰彇鐢虫姤鍗曞垪琛ㄥけ璐?', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // 鑾峰彇鐢虫姤鍗曡鎯?  const fetchDeclarationDetail = async (id) => {
+    loading.value = true
+    try {
+      const response = await getDeclarationDetail(id)
+      if (response.success) {
+        currentDeclaration.value = response.data
+        return response.data
+      }
+    } catch (error) {
+      console.error('鑾峰彇鐢虫姤鍗曡鎯呭け璐?', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // Save declaration for non-empty vehicle
+  const saveDeclarationData = async (data) => {
+    loading.value = true
+    try {
+      console.log('Saving non-empty declaration:', data)
+
+      const normalizeNumber = (value, defaultValue = 0) => {
+        if (value === null || value === undefined || value === '') {
+          return defaultValue
+        }
+        const num = Number(value)
+        return Number.isNaN(num) ? defaultValue : num
+      }
+
+      const goodsItems = (data.goodsList || [])
+        .filter(item => item && (item.goodsName || item.goodsCode || item.itemNo || normalizeNumber(item.declareQty, 0) > 0))
+        .map(item => ({
+          itemNo: item.itemNo || '',
+          goodsName: item.goodsName || '',
+          quantity: normalizeNumber(item.declareQty, 0),
+          goodsCode: item.goodsCode || '',
+          specification: item.goodsSpec || '',
+          unit: item.unit || '',
+          unitPrice: normalizeNumber(item.unitPrice, 0),
+          totalPrice: normalizeNumber(item.totalPrice, 0),
+          currency: item.currency || 'CNY',
+          materialProperty: item.materialNature || data.materialNature || '',
+          remark: item.remark || ''
+        }))
+
+      const declarationGoods = goodsItems.map(item => ({
+        itemNo: item.itemNo,
+        goodsName: item.goodsName,
+        declareQty: item.quantity,
+        goodsCode: item.goodsCode,
+        goodsSpec: item.specification,
+        unit: item.unit,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        currency: item.currency,
+        materialType: item.materialProperty,
+        remark: item.remark
+      }))
+
+      const bizType = data.ieMark === 'I' ? 'U' : 'E'
+      const bizMode = data.ieMark === 'I' ? 'U01' : 'E01'
+      const ieMarkForHeader = data.ieMark === 'I' ? '1' : '2'
+
+      const payload = {
+        declaration: {
+          dischargedNo: data.dischargedNo || '',
+          carNo: data.carNo || '',
+          carWeight: normalizeNumber(data.carWt, 0),
+          startPlace: data.startLand || '',
+          destination: data.goalLand || '',
+          areaMark: data.areaCode || '',
+          totalWeight: normalizeNumber(data.factWeight, 0),
+          remark: data.note || '',
+          packageCount: normalizeNumber(data.packNo, 0),
+          grossWeight: normalizeNumber(data.grossWeight, 0),
+          packageType: data.packType || '',
+          ieMark: data.ieMark || '',
+          materialType: data.materialNature || '',
+          bookNo: data.bookNo || '',
+          bizType,
+          bizMode,
+          goodsList: declarationGoods
+        },
+        applicationData: {
+          header: {
+            bizType,
+            bizMode,
+            ieMark: ieMarkForHeader,
+            goodsFlow: '1',
+            emsNo: data.bookNo || '',
+            mp: data.materialNature || '',
+            transferMode: '1',
+            guaranteType: '3',
+            areaCode: data.areaCode || '',
+            netWeight: normalizeNumber(data.factWeight, 0),
+            grossWeight: normalizeNumber(data.grossWeight, 0),
+            packNo: normalizeNumber(data.packNo, 0),
+            packType: data.packType || '',
+            licensePlate: data.carNo || '',
+            note: data.note || ''
+          },
+          goodsItems
+        }
+      }
+
+      console.log('Payload for complete declaration:', payload)
+      const response = await saveDeclaration(payload)
+      if (response.success) {
+        if (currentDeclaration.value) {
+          currentDeclaration.value = {
+            ...currentDeclaration.value,
+            dischargedNo: response.data
+          }
+        }
+        return response.data
+      }
+      throw new Error(response.message || 'Save failed')
+    } catch (error) {
+      console.error('Failed to save non-empty declaration:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+  const saveEmptyVehicleDeclarationData = async (data) => {
+    loading.value = true
+    try {
+      console.log('姝ｅ湪淇濆瓨绌鸿溅鏍告斁鍗?', data)
+      
+      // 灏嗗墠绔瓧娈靛悕鏄犲皠涓哄悗绔ā鍨嬪瓧娈靛悕
+      const mappedData = {
+        dischargedNo: data.dischargedNo || '',
+        carNo: data.carNo || '',
+        carWeight: data.carWt || 0,
+        startPlace: data.startLand || '',
+        destination: data.goalLand || '',
+        areaMark: data.areaCode || '',
+        totalWeight: data.factWeight || 0,
+        remark: data.note || '',
+        packageCount: data.packNo || 0,
+        grossWeight: data.grossWeight || 0,
+        packageType: data.packType || '',
+        ieMark: data.ieMark || '',
+        materialType: data.materialNature || '',
+        bookNo: data.bookNo || '',
+        goodsList: data.goodsList?.map(item => ({
+          itemNo: item.itemNo || '',
+          goodsName: item.goodsName || '',
+          declareQty: item.declareQty || 0,
+          goodsCode: item.goodsCode || '',
+          goodsSpec: item.goodsSpec || '',
+          unit: item.unit || '',
+          unitPrice: item.unitPrice || 0,
+          totalPrice: item.totalPrice || 0,
+          currency: item.currency || '',
+          materialType: item.materialNature || '',
+          remark: item.remark || ''
+        })) || []
+      }
+      
+      console.log('鏄犲皠鍚庣殑鏁版嵁:', mappedData)
+      const response = await saveEmptyVehicleDeclaration(mappedData)
+      if (response.success) {
+        // 鏇存柊褰撳墠鐢虫姤鍗曟暟鎹?        if (currentDeclaration.value) {
+          currentDeclaration.value = { 
+            ...currentDeclaration.value, 
+            dischargedNo: response.data // 杩斿洖鐨勬槸鐢熸垚鐨勬牳鏀惧崟缂栧彿
+          }
+        }
+        return response.data
+      }
+      throw new Error(response.message || '淇濆瓨澶辫触')
+    } catch (error) {
+      console.error('淇濆瓨绌鸿溅鏍告斁鍗曞け璐?', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // 鎻愪氦鐢虫姤鍗?  const submitDeclarationData = async (id) => {
+    loading.value = true
+    try {
+      const response = await submitDeclaration(id)
+      if (response.success) {
+        // 鍒锋柊鍒楄〃
+        await fetchDeclarationList()
+        return response.data
+      }
+      throw new Error(response.message || '鎻愪氦澶辫触')
+    } catch (error) {
+      console.error('鎻愪氦鐢虫姤鍗曞け璐?', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // 鑾峰彇妯℃澘鍒楄〃
+  const fetchTemplateList = async () => {
+    try {
+      const response = await getTemplateList()
+      if (response.success) {
+        templates.value = response.data || []
+        return response.data
+      }
+    } catch (error) {
+      console.error('鑾峰彇妯℃澘鍒楄〃澶辫触:', error)
+    }
+  }
+  
+  // 淇濆瓨涓烘ā鏉?  const saveAsTemplate = async (templateData) => {
+    try {
+      const response = await saveTemplate(templateData)
+      if (response.success) {
+        // 鍒锋柊妯℃澘鍒楄〃
+        await fetchTemplateList()
+        return response.data
+      }
+      throw new Error(response.message || '淇濆瓨妯℃澘澶辫触')
+    } catch (error) {
+      console.error('淇濆瓨妯℃澘澶辫触:', error)
+      throw error
+    }
+  }
+  
+  // 娓呯┖褰撳墠鐢虫姤鍗?  const clearCurrentDeclaration = () => {
+    currentDeclaration.value = null
+  }
+  
+  // 鍒濆鍖栨柊鐢虫姤鍗?  const initNewDeclaration = () => {
+    currentDeclaration.value = {
+      // 鏍告斁鍗曡〃澶?      dischargedNo: '', // 灏嗛€氳繃瀛樺偍杩囩▼鑷姩鐢熸垚
+      carNo: '',
+      carWt: null,
+      startLand: '',
+      goalLand: '',
+      areaCode: '',
+      factWeight: null,
+      note: '',
+      packNo: null,
+      grossWeight: null,
+      packType: '',
+      ieMark: '',
+      materialNature: '',
+      bookNo: '',
+      
+      // 鍟嗗搧琛ㄤ綋
+      goodsList: [
+        {
+          itemNo: '',
+          goodsName: '',
+          declareQty: null,
+          goodsCode: '',
+          goodsSpec: '',
+          unit: '',
+          unitPrice: null,
+          totalPrice: null,
+          currency: 'CNY',
+          materialNature: '',
+          remark: ''
+        }
+      ]
+    }
+  }
+  
+  return {
+    declarationList,
+    currentDeclaration,
+    templates,
+    loading,
+    fetchDeclarationList,
+    fetchDeclarationDetail,
+    saveDeclarationData,
+    saveEmptyVehicleDeclarationData,
+    submitDeclarationData,
+    fetchTemplateList,
+    saveAsTemplate,
+    clearCurrentDeclaration,
+    initNewDeclaration
+  }
+})
+
+
+
+
+
+
+
+
+
+
+

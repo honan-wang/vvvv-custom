@@ -1,0 +1,9 @@
+prompt Disabling triggers for HF_GJGOODS_PRE...
+alter table HF_GJGOODS_PRE disable all triggers;
+prompt Loading HF_GJGOODS_PRE...
+insert into HF_GJGOODS_PRE (auto_id, discharged_no, gatejob_no, inv_no, cop_g_no, g_no, code_ts, g_name, g_model, app_qty, app_unit, qty_1, unit_1, qty_2, unit_2, dec_price, total_price, curr, country, use_to, duty_mode, version_no, m_p, belong, goods_form, op_flag, stat_usd, stat_rmb, eq_class, eq_source, eq_status, exist_years, note, b2b_auto_id, con_auto_id, con_b2b_auto_id, gross_wt, net_wt)
+values ('F999260B8DAB46A29199085714B29B20', 'Q1310660A06250900009168', 'LF0409E25092900060', null, null, 6, '2106909090', 'ʳƷ', '1', 60, '006', null, null, null, null, 100, null, '142', null, null, null, null, '3', null, null, null, null, null, null, null, null, null, null, null, '9de26778fce145eaa06dd38431ed7856', null, null, null);
+commit;
+prompt 1 records loaded
+prompt Enabling triggers for HF_GJGOODS_PRE...
+alter table HF_GJGOODS_PRE enable all triggers;

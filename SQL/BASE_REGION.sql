@@ -1,0 +1,7 @@
+CREATE TABLE BASE_REGION
+(
+  auto_id VARCHAR(36) DEFAULT NEWID(),
+  code    VARCHAR(10) NOT NULL,
+  name    VARCHAR(50),
+  flag    VARCHAR(36)
+)

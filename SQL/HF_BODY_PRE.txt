@@ -1,0 +1,143 @@
+-- Create table
+create table HF_BODY_PRE
+(
+  auto_id        VARCHAR2(50) not null,
+  discharged_no  VARCHAR2(50),
+  gatejob_no     VARCHAR2(50),
+  work_no_rel    VARCHAR2(50),
+  bill_no        VARCHAR2(50),
+  gatejob_no_rel VARCHAR2(64),
+  gross_weight   NUMBER(18,5),
+  pack_no        NUMBER(18,2),
+  status         VARCHAR2(50),
+  last_car       VARCHAR2(50),
+  biz_type       VARCHAR2(10),
+  i_e_mark       VARCHAR2(2),
+  arrive_no      VARCHAR2(50),
+  entry_no       VARCHAR2(50),
+  unload_code    VARCHAR2(2),
+  customs_code   VARCHAR2(10),
+  voyage_no      VARCHAR2(50),
+  arrive_time    VARCHAR2(20),
+  btm_type_code  VARCHAR2(2),
+  trn_mode       VARCHAR2(2),
+  traf_mode      VARCHAR2(2),
+  traf_name      VARCHAR2(50),
+  traf_way       VARCHAR2(10),
+  note           VARCHAR2(500)
+)
+tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 128K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Add comments to the table 
+comment on table HF_BODY_PRE
+  is '核放单表体';
+-- Add comments to the columns 
+comment on column HF_BODY_PRE.auto_id
+  is '自动编辑';
+comment on column HF_BODY_PRE.discharged_no
+  is '核放单号';
+comment on column HF_BODY_PRE.gatejob_no
+  is '非报关作业单号/报关单号';
+comment on column HF_BODY_PRE.work_no_rel
+  is '企业内部作业单号';
+comment on column HF_BODY_PRE.bill_no
+  is '提运单号';
+comment on column HF_BODY_PRE.gatejob_no_rel
+  is '申请表号/报关业务申请单号';
+comment on column HF_BODY_PRE.gross_weight
+  is '毛重';
+comment on column HF_BODY_PRE.pack_no
+  is '件数';
+comment on column HF_BODY_PRE.status
+  is '申请单状态';
+comment on column HF_BODY_PRE.last_car
+  is '末车标志';
+comment on column HF_BODY_PRE.biz_type
+  is '运抵方式';
+comment on column HF_BODY_PRE.i_e_mark
+  is '进出口标志';
+comment on column HF_BODY_PRE.arrive_no
+  is '运抵编号';
+comment on column HF_BODY_PRE.entry_no
+  is '报关单号';
+comment on column HF_BODY_PRE.unload_code
+  is '卸货地代码';
+comment on column HF_BODY_PRE.customs_code
+  is '海关编码';
+comment on column HF_BODY_PRE.voyage_no
+  is '航班航次号';
+comment on column HF_BODY_PRE.arrive_time
+  is '运抵日期';
+comment on column HF_BODY_PRE.btm_type_code
+  is '运输方式代码';
+comment on column HF_BODY_PRE.trn_mode
+  is '转关方式';
+comment on column HF_BODY_PRE.traf_mode
+  is '进出境运输方式';
+comment on column HF_BODY_PRE.traf_name
+  is '进出境运输方式名称';
+comment on column HF_BODY_PRE.traf_way
+  is '境内运输方式';
+comment on column HF_BODY_PRE.note
+  is '备注';
+-- Create/Recreate indexes 
+create index IDX_HF_BODY_PRE_DISCHARGED_NO on HF_BODY_PRE (DISCHARGED_NO)
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create index IDX_HF_BODY_PRE_GATEJOB_NO on HF_BODY_PRE (GATEJOB_NO)
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create index IDX_HF_BODY_PRE_GATEJOB_NO_REL on HF_BODY_PRE (GATEJOB_NO_REL)
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table HF_BODY_PRE
+  add constraint PK_HF_BODY_PRE primary key (AUTO_ID)
+  using index 
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

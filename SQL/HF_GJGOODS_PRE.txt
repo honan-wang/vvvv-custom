@@ -1,0 +1,169 @@
+-- Create table
+create table HF_GJGOODS_PRE
+(
+  auto_id         VARCHAR2(50) default sys_guid() not null,
+  discharged_no   VARCHAR2(50),
+  gatejob_no      VARCHAR2(50),
+  inv_no          VARCHAR2(50),
+  cop_g_no        VARCHAR2(50),
+  g_no            NUMBER(19),
+  code_ts         VARCHAR2(13),
+  g_name          VARCHAR2(500),
+  g_model         VARCHAR2(1000),
+  app_qty         NUMBER(18,5),
+  app_unit        VARCHAR2(3),
+  qty_1           NUMBER(18,5),
+  unit_1          VARCHAR2(3),
+  qty_2           NUMBER(18,5),
+  unit_2          VARCHAR2(3),
+  dec_price       NUMBER(18,5),
+  total_price     NUMBER(18,5),
+  curr            VARCHAR2(3),
+  country         VARCHAR2(3),
+  use_to          VARCHAR2(2),
+  duty_mode       VARCHAR2(1),
+  version_no      VARCHAR2(10),
+  m_p             VARCHAR2(1),
+  belong          VARCHAR2(1),
+  goods_form      VARCHAR2(1),
+  op_flag         VARCHAR2(1),
+  stat_usd        NUMBER(18,5),
+  stat_rmb        NUMBER(18,5),
+  eq_class        VARCHAR2(10),
+  eq_source       VARCHAR2(20),
+  eq_status       VARCHAR2(20),
+  exist_years     INTEGER,
+  note            VARCHAR2(500),
+  b2b_auto_id     VARCHAR2(50),
+  con_auto_id     VARCHAR2(50),
+  con_b2b_auto_id VARCHAR2(50),
+  gross_wt        NUMBER(19,5),
+  net_wt          NUMBER(19,5)
+)
+tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Add comments to the table 
+comment on table HF_GJGOODS_PRE
+  is '07-01-05、核放单-预录入-申请单明细信息';
+-- Add comments to the columns 
+comment on column HF_GJGOODS_PRE.auto_id
+  is '自动编号';
+comment on column HF_GJGOODS_PRE.discharged_no
+  is '核放单号';
+comment on column HF_GJGOODS_PRE.gatejob_no
+  is '申请单号';
+comment on column HF_GJGOODS_PRE.inv_no
+  is '发票号';
+comment on column HF_GJGOODS_PRE.cop_g_no
+  is '货号';
+comment on column HF_GJGOODS_PRE.g_no
+  is '项号';
+comment on column HF_GJGOODS_PRE.code_ts
+  is '商品编号';
+comment on column HF_GJGOODS_PRE.g_name
+  is '商品名称';
+comment on column HF_GJGOODS_PRE.g_model
+  is '规格型号';
+comment on column HF_GJGOODS_PRE.app_qty
+  is '装载数量';
+comment on column HF_GJGOODS_PRE.app_unit
+  is '成交单位';
+comment on column HF_GJGOODS_PRE.qty_1
+  is '第一数量';
+comment on column HF_GJGOODS_PRE.unit_1
+  is '第一单位';
+comment on column HF_GJGOODS_PRE.qty_2
+  is '第二数量';
+comment on column HF_GJGOODS_PRE.unit_2
+  is '第二单位';
+comment on column HF_GJGOODS_PRE.dec_price
+  is '单价';
+comment on column HF_GJGOODS_PRE.total_price
+  is '总价';
+comment on column HF_GJGOODS_PRE.curr
+  is '币制';
+comment on column HF_GJGOODS_PRE.country
+  is '原产国';
+comment on column HF_GJGOODS_PRE.use_to
+  is '用途';
+comment on column HF_GJGOODS_PRE.duty_mode
+  is '征免方式';
+comment on column HF_GJGOODS_PRE.version_no
+  is '版本号';
+comment on column HF_GJGOODS_PRE.m_p
+  is '料件性质';
+comment on column HF_GJGOODS_PRE.belong
+  is '归属：区内、区外';
+comment on column HF_GJGOODS_PRE.goods_form
+  is '货物形态';
+comment on column HF_GJGOODS_PRE.op_flag
+  is '操作标志';
+comment on column HF_GJGOODS_PRE.stat_usd
+  is '统计美元值';
+comment on column HF_GJGOODS_PRE.stat_rmb
+  is '统计人民币';
+comment on column HF_GJGOODS_PRE.eq_class
+  is '设备类别：飞机、船舶、汽车、普通设备';
+comment on column HF_GJGOODS_PRE.eq_source
+  is '设备来源';
+comment on column HF_GJGOODS_PRE.eq_status
+  is '设备状态';
+comment on column HF_GJGOODS_PRE.exist_years
+  is '已有年限（月）';
+comment on column HF_GJGOODS_PRE.note
+  is '备注';
+comment on column HF_GJGOODS_PRE.b2b_auto_id
+  is 'B2B主键';
+comment on column HF_GJGOODS_PRE.con_auto_id
+  is '申请单表体/清单表体主键';
+comment on column HF_GJGOODS_PRE.con_b2b_auto_id
+  is '申请单表体/清单表体B2B主键';
+-- Create/Recreate indexes 
+create index IDX_HF_GJGOODS_PRE_DISCHARGED_ on HF_GJGOODS_PRE (DISCHARGED_NO)
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 192K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create index IDX_HF_GJGOODS_PRE_GATEJOB_NO on HF_GJGOODS_PRE (GATEJOB_NO)
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 192K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table HF_GJGOODS_PRE
+  add constraint PK_HF_GJGOODS_PRE primary key (AUTO_ID)
+  using index 
+  tablespace LF_FTZ_PLAT
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 192K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

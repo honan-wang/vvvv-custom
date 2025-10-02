@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #409eff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #337ecc;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>用户管理API测试</h1>
+    
+    <div class="test-section">
+        <h3>测试获取用户列表</h3>
+        <button onclick="testGetUsers()">获取用户列表</button>
+        <div id="users-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试创建用户</h3>
+        <button onclick="testCreateUser()">创建测试用户</button>
+        <div id="create-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试获取用户详情</h3>
+        <button onclick="testGetUserDetail()">获取用户详情 (ID: 1)</button>
+        <div id="detail-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5002/api';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { success: true, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function displayResult(elementId, result) {
+            const element = document.getElementById(elementId);
+            if (result.success) {
+                element.innerHTML = `
+                    <div class="success">✅ 请求成功</div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `;
+            } else {
+                element.innerHTML = `
+                    <div class="error">❌ 请求失败: ${result.error}</div>
+                `;
+            }
+        }
+        
+        async function testGetUsers() {
+            const result = await makeRequest(`${API_BASE}/user/list`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    page: 1,
+                    pageSize: 10,
+                    keyword: '',
+                    status: null
+                })
+            });
+            displayResult('users-result', result);
+        }
+        
+        async function testCreateUser() {
+            const result = await makeRequest(`${API_BASE}/user`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: 'newuser',
+                    password: 'password123',
+                    role: 'User',
+                    customsCode: '2222222222',
+                    customsName: '深圳海关',
+                    companyCode: 'NEW001',
+                    companyName: '新用户公司',
+                    status: 1
+                })
+            });
+            displayResult('create-result', result);
+        }
+        
+        async function testGetUserDetail() {
+            const result = await makeRequest(`${API_BASE}/user/1`);
+            displayResult('detail-result', result);
+        }
+    </script>
+</body>
+</html>

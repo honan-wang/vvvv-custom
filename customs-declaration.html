@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海关报关申报系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 14px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 2px solid #1890ff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #1890ff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e6f7ff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .progress-fill {
+            background: #52c41a;
+            height: 4px;
+            border-radius: 2px;
+            width: 75%;
+            margin: 5px auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 35%;
+            overflow-y: auto;
+        }
+
+        .form-body {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .form-section h2 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1890ff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .form-group.required label:after {
+            content: " *";
+            color: #ff4d4f;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-secondary:hover {
+            background: #e6f7ff;
+            border-color: #1890ff;
+        }
+
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .data-table th {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table td {
+            border: 1px solid #e8e8e8;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .data-table input {
+            width: 100%;
+            border: none;
+            padding: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .data-table input:focus {
+            outline: 2px solid #1890ff;
+            background: #e6f7ff;
+        }
+
+        .add-row-btn {
+            background: #52c41a;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 2px;
+        }
+
+        .delete-row-btn {
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .footer-actions {
+            background: #fff;
+            padding: 20px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-large {
+            padding: 12px 32px;
+            font-size: 16px;
+        }
+
+        .error-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .error-title {
+            color: #ff4d4f;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .error-list {
+            list-style: none;
+        }
+
+        .error-list li {
+            color: #ff4d4f;
+            font-size: 12px;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .error-list li:before {
+            content: "●";
+            position: absolute;
+            left: 0;
+        }
+
+        .calculator-panel {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 200px;
+            background: white;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .calculator-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .calculator-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .help-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="header">
+            <h1>海关进出口货物报关单</h1>
+            <div class="progress-bar">
+                填写完成度：75% (18/24个必填项已完成)
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 表头信息 -->
+            <div class="form-header">
+                <div class="form-section">
+                    <h2>报关单表头信息</h2>
+                    <div class="quick-actions">
+                        <button class="btn btn-secondary">复制上票</button>
+                        <button class="btn btn-secondary">载入模板</button>
+                        <button class="btn btn-secondary">保存模板</button>
+                        <button class="btn btn-primary">自动填充</button>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label>报关单编号</label>
+                            <input type="text" class="form-control" placeholder="系统自动生成" readonly>
+                        </div>
+                        <div class="form-group required">
+                            <label>申报日期</label>
+                            <input type="date" class="form-control" value="2024-01-15">
+                        </div>
+                        <div class="form-group required">
+                            <label>进出口标记</label>
+                            <select class="form-control">
+                                <option>进口</option>
+                                <option>出口</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label>收发货人</label>
+                            <input type="text" class="form-control" placeholder="输入企业名称或代码" list="companies">
+                            <datalist id="companies">
+                                <option value="上海贸易有限公司">
+                                <option value="北京进出口公司">
+                                <option value="广州国际贸易集团">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>消费使用单位</label>
+                            <input type="text" class="form-control" placeholder="自动填充或手动输入">
+                        </div>
+                        <div class="form-group required">
+                            <label>申报单位</label>
+                            <input type="text" class="form-control" value="上海报关行有限公司">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label>运输方式</label>
+                            <select class="form-control">
+                                <option>海运</option>
+                                <option>空运</option>
+                                <option>陆运</option>
+                                <option>邮运</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>运输工具名称</label>
+                            <input type="text" class="form-control" placeholder="船名/航班号/车牌号">
+                        </div>
+                        <div class="form-group">
+                            <label>提运单号</label>
+                            <input type="text" class="form-control" placeholder="输入提单号">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label>贸易方式</label>
+                            <select class="form-control">
+                                <option>一般贸易</option>
+                                <option>来料加工</option>
+                                <option>进料加工</option>
+                                <option>其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>征免性质</label>
+                            <select class="form-control">
+                                <option>一般征税</option>
+                                <option>全免</option>
+                                <option>减半</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>许可证号</label>
+                            <input type="text" class="form-control" placeholder="如有许可证请填入">
+                            <div class="help-text">多个许可证用逗号分隔</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 表体信息 -->
+            <div class="form-body">
+                <div class="form-section">
+                    <h2>货物清单 (商品项目)</h2>
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" onclick="addTableRow()">+ 添加行</button>
+                        <button class="btn btn-secondary">批量添加</button>
+                        <button class="btn btn-secondary">导入Excel</button>
+                        <button class="btn btn-secondary">复制行</button>
+                        <button class="btn btn-secondary">清空</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="goodsTable">
+                            <thead>
+                                <tr>
+                                    <th width="40">序号</th>
+                                    <th width="120">商品编号</th>
+                                    <th width="200">商品名称及规格型号</th>
+                                    <th width="80">数量</th>
+                                    <th width="60">单位</th>
+                                    <th width="100">单价(USD)</th>
+                                    <th width="100">总价(USD)</th>
+                                    <th width="80">币制</th>
+                                    <th width="120">原产国(地区)</th>
+                                    <th width="80">毛重(KG)</th>
+                                    <th width="80">净重(KG)</th>
+                                    <th width="40">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="text" placeholder="8位HS编码" maxlength="8" value="85171200"></td>
+                                    <td><input type="text" placeholder="详细描述商品" value="智能手机（4G，64GB存储）"></td>
+                                    <td><input type="number" step="0.01" value="100" onchange="calculateTotal(this)"></td>
+                                    <td>
+                                        <select>
+                                            <option>台</option>
+                                            <option>个</option>
+                                            <option>件</option>
+                                            <option>套</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" value="299.99" onchange="calculateTotal(this)"></td>
+                                    <td><input type="number" step="0.01" value="29999.00" readonly></td>
+                                    <td>
+                                        <select>
+                                            <option>USD</option>
+                                            <option>EUR</option>
+                                            <option>CNY</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select>
+                                            <option>中国</option>
+                                            <option>美国</option>
+                                            <option>日本</option>
+                                            <option>韩国</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" value="15.50"></td>
+                                    <td><input type="number" step="0.01" value="12.00"></td>
+                                    <td><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><input type="text" placeholder="8位HS编码" maxlength="8"></td>
+                                    <td><input type="text" placeholder="详细描述商品"></td>
+                                    <td><input type="number" step="0.01" onchange="calculateTotal(this)"></td>
+                                    <td>
+                                        <select>
+                                            <option>台</option>
+                                            <option>个</option>
+                                            <option>件</option>
+                                            <option>套</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" onchange="calculateTotal(this)"></td>
+                                    <td><input type="number" step="0.01" readonly></td>
+                                    <td>
+                                        <select>
+                                            <option>USD</option>
+                                            <option>EUR</option>
+                                            <option>CNY</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select>
+                                            <option>中国</option>
+                                            <option>美国</option>
+                                            <option>日本</option>
+                                            <option>韩国</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01"></td>
+                                    <td><input type="number" step="0.01"></td>
+                                    <td><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="text-align: center; padding: 20px;">
+                                        <button class="add-row-btn" onclick="addTableRow()">+</button>
+                                        <span style="color: #999; font-size: 12px; margin-left: 10px;">点击添加更多商品项目</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作区 -->
+        <div class="footer-actions">
+            <button class="btn btn-secondary btn-large">暂存</button>
+            <button class="btn btn-secondary btn-large">预览</button>
+            <button class="btn btn-primary btn-large">提交申报</button>
+            <button class="btn btn-secondary btn-large">打印</button>
+            <button class="btn btn-secondary btn-large">导出</button>
+        </div>
+    </div>
+
+    <!-- 错误提示面板 -->
+    <div class="error-panel">
+        <div class="error-title">待修正项目 (6)</div>
+        <ul class="error-list">
+            <li>第2行：商品编号不能为空</li>
+            <li>第2行：商品名称不能为空</li>
+            <li>第2行：数量必须大于0</li>
+            <li>表头：运输工具名称为必填项</li>
+            <li>表头：提运单号格式错误</li>
+            <li>商品总重量与包装重量不符</li>
+        </ul>
+    </div>
+
+    <!-- 计算器面板 -->
+    <div class="calculator-panel">
+        <div class="calculator-title">快捷计算器</div>
+        <input type="text" class="calculator-input" placeholder="输入计算表达式" value="100 × 299.99">
+        <div style="text-align: center; font-weight: bold; color: #1890ff;">= 29,999.00</div>
+        <div class="help-text">支持 +、-、×、÷ 运算</div>
+    </div>
+
+    <script>
+        let rowCounter = 2;
+
+        function addTableRow() {
+            const tbody = document.querySelector('#goodsTable tbody');
+            const lastRow = tbody.lastElementChild;
+            
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${++rowCounter}</td>
+                <td><input type="text" placeholder="8位HS编码" maxlength="8"></td>
+                <td><input type="text" placeholder="详细描述商品"></td>
+                <td><input type="number" step="0.01" onchange="calculateTotal(this)"></td>
+                <td>
+                    <select>
+                        <option>台</option>
+                        <option>个</option>
+                        <option>件</option>
+                        <option>套</option>
+                    </select>
+                </td>
+                <td><input type="number" step="0.01" onchange="calculateTotal(this)"></td>
+                <td><input type="number" step="0.01" readonly></td>
+                <td>
+                    <select>
+                        <option>USD</option>
+                        <option>EUR</option>
+                        <option>CNY</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option>中国</option>
+                        <option>美国</option>
+                        <option>日本</option>
+                        <option>韩国</option>
+                    </select>
+                </td>
+                <td><input type="number" step="0.01"></td>
+                <td><input type="number" step="0.01"></td>
+                <td><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
+            `;
+            
+            tbody.insertBefore(newRow, lastRow);
+        }
+
+        function deleteRow(btn) {
+            if (confirm('确定要删除这一行吗？')) {
+                btn.closest('tr').remove();
+                updateRowNumbers();
+            }
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#goodsTable tbody tr:not(:last-child)');
+            rows.forEach((row, index) => {
+                row.firstElementChild.textContent = index + 1;
+            });
+            rowCounter = rows.length;
+        }
+
+        function calculateTotal(input) {
+            const row = input.closest('tr');
+            const quantity = parseFloat(row.querySelector('td:nth-child(4) input').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('td:nth-child(6) input').value) || 0;
+            const totalPrice = quantity * unitPrice;
+            row.querySelector('td:nth-child(7) input').value = totalPrice.toFixed(2);
+        }
+
+        // 自动保存功能
+        setInterval(() => {
+            console.log('自动保存中...');
+            // 这里可以添加实际的自动保存逻辑
+        }, 30000);
+
+        // Tab键导航优化
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                // 在表格中按Tab键时的特殊处理
+                const activeElement = document.activeElement;
+                if (activeElement.tagName === 'INPUT' && activeElement.closest('.data-table')) {
+                    // 表格内的Tab导航逻辑
+                }
+            }
+        });
+
+        // 实时验证
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('form-control') || e.target.closest('.data-table')) {
+                // 实时验证逻辑
+                validateField(e.target);
+            }
+        });
+
+        function validateField(field) {
+            // 简单的验证示例
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                field.style.borderColor = '#ff4d4f';
+            } else {
+                field.style.borderColor = '#d9d9d9';
+            }
+        }
+    </script>
+</body>
+</html>
