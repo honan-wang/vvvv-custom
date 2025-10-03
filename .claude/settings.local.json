@@ -58,7 +58,13 @@
       "Bash(dotnet tool list:*)",
       "Bash(ilspycmd:*)",
       "Bash(Stop-Process -Id 29356 -Force)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(Stop-Process -Id 27000 -Force)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

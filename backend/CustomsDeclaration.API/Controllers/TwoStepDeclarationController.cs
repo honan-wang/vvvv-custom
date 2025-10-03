@@ -179,6 +179,44 @@ namespace CustomsDeclaration.API.Controllers
         }
 
         /// <summary>
+        /// 直接申报核放单（空车核放单一步申报）
+        /// </summary>
+        /// <param name="dischargedNo">核放单号</param>
+        /// <returns>申报结果</returns>
+        [HttpPost("submit-discharge-directly/{dischargedNo}")]
+        public async Task<ActionResult<ApiResponse<string>>> SubmitDischargeDirectly(string dischargedNo)
+        {
+            try
+            {
+                _logger.LogInformation($"直接申报核放单（空车核放单），核放单号：{dischargedNo}");
+
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return Unauthorized(ApiResponse<string>.Fail("用户未登录"));
+                }
+
+                var result = await _twoStepService.SubmitDischargeDirectlyAsync(dischargedNo, userId);
+
+                if (result.Success)
+                {
+                    _logger.LogInformation($"空车核放单直接申报成功，核放单号：{dischargedNo}");
+                    return Ok(result);
+                }
+                else
+                {
+                    _logger.LogWarning($"空车核放单直接申报失败，核放单号：{dischargedNo}，错误：{result.Message}");
+                    return BadRequest(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"直接申报核放单时发生异常，核放单号：{dischargedNo}");
+                return StatusCode(500, ApiResponse<string>.Fail("系统内部错误"));
+            }
+        }
+
+        /// <summary>
         /// 获取当前登录用户ID
         /// </summary>
         /// <returns>用户ID</returns>

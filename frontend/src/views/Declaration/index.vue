@@ -331,7 +331,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { formatDate } from '@/utils/date'
 import { getUnifiedDeclarationList, deleteUnifiedDeclaration } from '@/api/unifiedDeclaration'
-import { startDeclaration, resubmitDeclaration, getDeclarationStatus } from '@/api/twoStepDeclaration'
+import { startDeclaration, resubmitDeclaration, getDeclarationStatus, submitDischargeDirectly } from '@/api/twoStepDeclaration'
 import CreateDialog from './components/CreateDialog.vue'
 import ViewDetailDialog from './components/ViewDetailDialog.vue'
 import DeclarationStatusDialog from './components/DeclarationStatusDialog.vue'
@@ -596,21 +596,28 @@ const canDelete = (row) => {
 
 // 申报状态判断方法
 const canStartDeclaration = (row) => {
-  // 必须同时满足：核放单状态和申请单状态都是初始状态
-  const dischargedStatus = row.dischargedStatus || ''
-  const applicationStatus = row.applicationStatus || ''
-
   // 核放单状态必须是初始状态
+  const dischargedStatus = row.dischargedStatus || ''
   const dischargedIsInitial = dischargedStatus.includes('草稿') ||
                                dischargedStatus.includes('暂存') ||
                                dischargedStatus.includes('预录入') ||
                                dischargedStatus === ''
 
-  // 申请单状态必须是初始状态(空或暂存)
+  if (!dischargedIsInitial) {
+    return false
+  }
+
+  // 如果是空车核放单 (biz_type='KA10')，不需要检查申请单状态
+  if (row.bizType === 'KA10') {
+    return true
+  }
+
+  // 非空车核放单，需要检查申请单状态
+  const applicationStatus = row.applicationStatus || ''
   const applicationIsInitial = applicationStatus.includes('暂存') ||
                                 applicationStatus === ''
 
-  return dischargedIsInitial && applicationIsInitial
+  return applicationIsInitial
 }
 
 const canResubmitDeclaration = (row) => {
@@ -652,14 +659,31 @@ const isDeclarationCompleted = (row) => {
 // 申报操作方法
 const handleStartDeclaration = async (row) => {
   try {
-    // 检查申请单号是否存在
+    // 设置申报中状态
+    row.declaring = true
+
+    // 检查是否为空车核放单 (biz_type='KA10')
+    if (row.bizType === 'KA10') {
+      // 空车核放单直接申报，不需要申请单
+      ElMessage.info('正在提交空车核放单...')
+
+      const response = await submitDischargeDirectly(row.dischargedNo)
+
+      if (response.success) {
+        ElMessage.success('空车核放单提交成功，等待海关审批')
+        // 刷新数据
+        await fetchTableData()
+      } else {
+        ElMessage.error(response.message || '申报失败')
+      }
+      return
+    }
+
+    // 非空车核放单，需要检查申请单号
     if (!row.applicationNo) {
       ElMessage.error('申请单号不存在，无法申报')
       return
     }
-
-    // 设置申报中状态
-    row.declaring = true
 
     ElMessage.info('正在提交申请单...')
 

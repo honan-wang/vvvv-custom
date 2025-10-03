@@ -39,3 +39,12 @@ export function getDeclarationStatus(dischargedNo) {
 export function manualSubmitDischarge(dischargedNo) {
   return request.post(`/TwoStepDeclaration/submit-discharge/${dischargedNo}`)
 }
+
+/**
+ * 直接申报核放单（空车核放单一步申报）
+ * @param {string} dischargedNo 核放单号
+ * @returns {Promise} 申报结果
+ */
+export function submitDischargeDirectly(dischargedNo) {
+  return request.post(`/TwoStepDeclaration/submit-discharge-directly/${dischargedNo}`)
+}

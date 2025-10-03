@@ -24,3 +24,17 @@
 ## Security & Configuration Tips
 - Never commit real connection strings or JWT secrets. Use `appsettings.Development.json` and `.env.development` only for local values and document sensitive overrides in your PR.
 - Restore `[Authorize]` attributes and middleware before merging. Scrub exported SQL from personal data and rotate default admin credentials after deployments.
+
+## Encoding & Chinese Text Handling
+- Keep repository files in UTF-8 without BOM; never save in GBK/GB2312.
+- In PowerShell, run chcp 65001 before using Get-Content/Set-Content so the console handles UTF-8 Chinese correctly.
+- Always pass -Encoding UTF8 (or use [IO.File]::ReadAllText/WriteAllText(..., [Text.Encoding]::UTF8)) when reading or writing files.
+- Avoid inline console editing that defaults to ANSI; prefer editors configured for UTF-8 or scripts that explicitly set encoding.
+- After edits, re-open the file with Get-Content -Encoding UTF8 to confirm Chinese text displays as expected.
+
+- 若发现旧文件被误存为 ANSI/GBK 等本地编码，先执行 `chcp 65001 | Out-Null`，再用 `Get-Content -Encoding Default path | Set-Content -Encoding UTF8 path` 将文件转换为 UTF-8 后再编辑，避免出现 `U+FFFD` 替换字符。
+- 批量脚本处理中文文本时，读取与写入都显式指定 `-Encoding UTF8` 或调用 `[IO.File]::ReadAllText(..., Encoding.UTF8)` / `[IO.File]::WriteAllText(..., Encoding.UTF8)`，不要依赖默认编码。
+
+
+
+

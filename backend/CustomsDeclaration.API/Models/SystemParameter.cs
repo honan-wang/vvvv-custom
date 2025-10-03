@@ -1,4 +1,4 @@
-namespace CustomsDeclaration.API.Models
+﻿namespace CustomsDeclaration.API.Models
 {
     /// <summary>
     /// 系统参数模型
@@ -37,18 +37,23 @@ namespace CustomsDeclaration.API.Models
     }
 
     /// <summary>
-    /// 参数选项（用于下拉框）
+    /// Parameter option for dropdown selections.
     /// </summary>
     public class ParameterOption
     {
         /// <summary>
-        /// 选项值
+        /// Option value.
         /// </summary>
         public string Value { get; set; } = string.Empty;
 
         /// <summary>
-        /// 选项标签
+        /// Option label.
         /// </summary>
         public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Optional remark (used to distinguish import/export ports).
+        /// </summary>
+        public string? Remark { get; set; }
     }
 }

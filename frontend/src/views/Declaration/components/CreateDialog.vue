@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-dialog
     v-model="dialogVisible"
     :title="dialogTitle"
@@ -79,7 +79,7 @@
               <el-form-item label="起始地" prop="startLand" class="required-field">
                 <el-select v-model="formData.startLand" placeholder="请选择起始地" class="full-width">
                   <el-option 
-                    v-for="option in portOptions" 
+                    v-for="option in startPortOptions" 
                     :key="option.value" 
                     :label="option.label" 
                     :value="option.value" 
@@ -92,7 +92,7 @@
               <el-form-item label="目的地" prop="goalLand" class="required-field">
                 <el-select v-model="formData.goalLand" placeholder="请选择目的地" class="full-width">
                   <el-option 
-                    v-for="option in portOptions" 
+                    v-for="option in goalPortOptions" 
                     :key="option.value" 
                     :label="option.label" 
                     :value="option.value" 
@@ -482,7 +482,37 @@ const showSaveTemplateDialog = ref(false)
 const showTemplateDialog = ref(false)
 
 // 下拉框选项数据
-const portOptions = ref([])  // 港口代码选项
+const allPortOptions = ref([])  // 港口代码选项
+const filterPortOptions = (remarkFlag) => {
+  const options = allPortOptions.value || []
+  const hasRemark = options.some((option) => {
+    if (!option) {
+      return false
+    }
+    const remarkValue = option.remark === undefined || option.remark === null ? '' : String(option.remark).trim()
+    return remarkValue !== ''
+  })
+
+  if (!hasRemark) {
+    return options
+  }
+
+  return options.filter((option) => {
+    if (!option) {
+      return false
+    }
+    const optionRemark = option.remark === undefined || option.remark === null ? '' : String(option.remark)
+    return optionRemark === String(remarkFlag)
+  })
+}
+
+const startPortOptions = computed(() => {
+  return props.type === 'import' ? filterPortOptions('1') : filterPortOptions('2')
+})
+
+const goalPortOptions = computed(() => {
+  return props.type === 'import' ? filterPortOptions('2') : filterPortOptions('1')
+})
 const regionOptions = ref([])  // 区域标志选项
 const wrapTypeOptions = ref([])  // 包装种类选项
 const bookOptions = ref([])  // 账册号选项
@@ -593,6 +623,42 @@ watch(() => props.modelValue, (newValue) => {
     loadLastUsedTemplate()
   }
 })
+
+watch(startPortOptions, (options) => {
+  if (!options.some((option) => option.value === formData.startLand)) {
+    formData.startLand = ''
+  }
+  if (options.length === 1) {
+    const [onlyOption] = options
+    if (onlyOption && onlyOption.value !== undefined && onlyOption.value !== null) {
+      formData.startLand = onlyOption.value
+    }
+  }
+}, { immediate: true })
+
+watch(goalPortOptions, (options) => {
+  if (!options.some((option) => option.value === formData.goalLand)) {
+    formData.goalLand = ''
+  }
+  if (options.length === 1) {
+    const [onlyOption] = options
+    if (onlyOption && onlyOption.value !== undefined && onlyOption.value !== null) {
+      formData.goalLand = onlyOption.value
+    }
+  }
+}, { immediate: true })
+
+watch(regionOptions, (options) => {
+  if (!options.some((option) => option.value === formData.areaCode)) {
+    formData.areaCode = ''
+  }
+  if (options.length === 1) {
+    const [onlyOption] = options
+    if (onlyOption && onlyOption.value !== undefined && onlyOption.value !== null) {
+      formData.areaCode = onlyOption.value
+    }
+  }
+}, { immediate: true })
 
 // 初始化表单数据
 const initFormData = () => {
@@ -754,7 +820,7 @@ const loadPortOptions = async () => {
   try {
     const response = await parameterApi.getPortOptions()
     if (response.success && response.data) {
-      portOptions.value = response.data
+      allPortOptions.value = (response.data || [])
     }
   } catch (error) {
     console.error('加载港口选项失败:', error)
@@ -1284,3 +1350,4 @@ const handleClose = () => {
   max-width: 400px;
 }
 </style>
+

@@ -392,6 +392,97 @@ namespace CustomsDeclaration.API.Services
             }
         }
 
+        /// <summary>
+        /// 直接申报核放单（空车核放单一步申报，biz_type='KA10'）
+        /// </summary>
+        public async Task<ApiResponse<string>> SubmitDischargeDirectlyAsync(string dischargedNo, int userId)
+        {
+            try
+            {
+                _logger.LogInformation($"开始直接申报核放单流程（空车核放单），核放单号：{dischargedNo}");
+
+                using var connection = _connectionFactory.CreateConnection();
+                if (connection is SqlConnection sqlConnection)
+                {
+                    await sqlConnection.OpenAsync();
+                }
+                else
+                {
+                    connection.Open();
+                }
+                using var transaction = connection.BeginTransaction();
+
+                try
+                {
+                    // 1. 检查核放单是否存在且业务类型为 KA10（空车核放单）
+                    var checkSql = @"
+                        SELECT BIZ_TYPE FROM HF_HEAD_PRE
+                        WHERE DISCHARGED_NO = @DischargedNo";
+
+                    var bizType = await _dbHelper.ExecuteScalarAsync<string>(
+                        connection, checkSql,
+                        new { DischargedNo = dischargedNo },
+                        transaction);
+
+                    if (string.IsNullOrEmpty(bizType))
+                    {
+                        return ApiResponse<string>.Fail("核放单不存在");
+                    }
+
+                    if (bizType != "KA10")
+                    {
+                        return ApiResponse<string>.Fail($"该核放单业务类型为 {bizType}，非空车核放单，不允许直接申报");
+                    }
+
+                    // 2. 提交核放单到海关系统
+                    var submitResult = await SubmitDischargePermitToCustomsAsync(dischargedNo);
+                    if (!submitResult)
+                    {
+                        return ApiResponse<string>.Fail("向海关系统提交核放单失败");
+                    }
+
+                    // 3. 更新核放单状态为"核放单已提交"
+                    var updateSql = @"
+                        UPDATE HF_HEAD_PRE
+                        SET STEP_ID = @StepId,
+                            OPER_TYPE = 'DECL',
+                            DECLARE_DATE = @DeclareDate,
+                            DECLARE_PERSON = @DeclarePerson
+                        WHERE DISCHARGED_NO = @DischargedNo";
+
+                    await _dbHelper.ExecuteAsync(
+                        connection, updateSql,
+                        new
+                        {
+                            StepId = DeclarationStatus.DischargeSubmitted.ToString().ToLower(),
+                            DeclareDate = DateTime.Now,
+                            DeclarePerson = userId.ToString(),
+                            DischargedNo = dischargedNo
+                        },
+                        transaction);
+
+                    // 4. 记录申报日志
+                    await InsertDeclarationLogAsync(connection, transaction, dischargedNo,
+                        "discharge_submitted_directly", "空车核放单直接申报已提交到海关系统", userId);
+
+                    transaction.Commit();
+
+                    _logger.LogInformation($"空车核放单直接申报完成：核放单号：{dischargedNo}");
+                    return ApiResponse<string>.Ok(dischargedNo, "空车核放单提交成功，等待海关审批");
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"直接申报核放单时发生异常，核放单号：{dischargedNo}");
+                return ApiResponse<string>.Fail($"直接申报核放单失败：{ex.Message}");
+            }
+        }
+
         #region 私有方法
 
         /// <summary>

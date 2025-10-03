@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using CustomsDeclaration.API.Data;
 using CustomsDeclaration.API.Models;
 
@@ -47,7 +47,7 @@ namespace CustomsDeclaration.API.Services
                 else
                 {
                     // 其他参数类型从SYS_PARAMETERS表获取
-                    sql = "SELECT PARA_CODE, PARA_NAME FROM SYS_PARAMETERS WHERE USED_FLAG = '1' AND PARA_TYPE = @paraType ORDER BY PARA_INDEX, PARA_CODE";
+                    sql = "SELECT PARA_CODE, PARA_NAME, REMARK FROM SYS_PARAMETERS WHERE USED_FLAG = '1' AND PARA_TYPE = @paraType ORDER BY PARA_INDEX, PARA_CODE";
                     parameters = new Dictionary<string, object>
                     {
                         { "paraType", paraType }
@@ -81,7 +81,8 @@ namespace CustomsDeclaration.API.Services
                         options.Add(new ParameterOption
                         {
                             Value = row["PARA_CODE"]?.ToString() ?? "",
-                            Label = row["PARA_NAME"]?.ToString() ?? ""
+                            Label = row["PARA_NAME"]?.ToString() ?? "",
+                            Remark = row.Table.Columns.Contains("REMARK") ? row["REMARK"]?.ToString() : null
                         });
                     }
                 }

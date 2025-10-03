@@ -32,5 +32,10 @@ namespace CustomsDeclaration.API.Services
         /// 重新申报（被退回后）
         /// </summary>
         Task<ApiResponse<string>> ResubmitDeclarationAsync(string businessNo, int userId);
+
+        /// <summary>
+        /// 直接申报核放单（空车核放单一步申报）
+        /// </summary>
+        Task<ApiResponse<string>> SubmitDischargeDirectlyAsync(string dischargedNo, int userId);
     }
 }

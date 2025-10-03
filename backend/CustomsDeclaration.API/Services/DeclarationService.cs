@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -42,7 +42,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<string>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<string>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			string dischargedNo = await _jobNumberService.GetJobNumberAsync("KA10", user.CompanyCode, user.CustomsCode);
 			Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -69,26 +69,26 @@ public class DeclarationService : IDeclarationService
 			string sql = BuildInsertSql();
 			if (await _databaseHelper.ExecuteNonQueryAsync(sql, parameters) > 0)
 			{
-				_logger.LogInformation("¿Õ³µºË·Åµ¥±£´æ³É¹¦£¬±àºÅ£º" + dischargedNo + "£¬ÓÃ»§£º" + user.Username);
+				_logger.LogInformation("ç©ºè½¦æ ¸æ”¾å•ä¿å­˜æˆåŠŸï¼Œç¼–å·ï¼š" + dischargedNo + "ï¼Œç”¨æˆ·ï¼š" + user.Username);
 				try
 				{
 					await _vehicleService.CreateVehicleFromDeclarationAsync(declaration.CarNo, declaration.CarWeight, user.CompanyCode, user.CompanyName);
-					_logger.LogInformation("¿Õ³µºË·Åµ¥¹ØÁª³µÁ¾¼ì²éÍê³É£¬³µÅÆºÅ£º" + declaration.CarNo);
+					_logger.LogInformation("ç©ºè½¦æ ¸æ”¾å•å…³è”è½¦è¾†æ£€æŸ¥å®Œæˆï¼Œè½¦ç‰Œå·ï¼š" + declaration.CarNo);
 				}
 				catch (Exception ex)
 				{
 					Exception vehicleEx = ex;
-					_logger.LogWarning(vehicleEx, "×Ô¶¯´´½¨³µÁ¾ĞÅÏ¢Ê§°Ü£¬³µÅÆºÅ£º" + declaration.CarNo + "£¬µ«²»Ó°ÏìºË·Åµ¥±£´æ");
+					_logger.LogWarning(vehicleEx, "è‡ªåŠ¨åˆ›å»ºè½¦è¾†ä¿¡æ¯å¤±è´¥ï¼Œè½¦ç‰Œå·ï¼š" + declaration.CarNo + "ï¼Œä½†ä¸å½±å“æ ¸æ”¾å•ä¿å­˜");
 				}
-				return ApiResponse<string>.Ok(dischargedNo, "±£´æ³É¹¦");
+				return ApiResponse<string>.Ok(dischargedNo, "ä¿å­˜æˆåŠŸ");
 			}
-			return ApiResponse<string>.Fail("±£´æÊ§°Ü");
+			return ApiResponse<string>.Fail("ä¿å­˜å¤±è´¥");
 		}
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"±£´æ¿Õ³µºË·Åµ¥Ê§°Ü£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<string>.Fail("±£´æÊ§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"ä¿å­˜ç©ºè½¦æ ¸æ”¾å•å¤±è´¥ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<string>.Fail("ä¿å­˜å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<string>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<string>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			string gateJobNo = await _jobNumberService.GetJobNumberAsync("LF", user.CompanyCode, user.CustomsCode);
 			Dictionary<string, object> headParameters = new Dictionary<string, object>
@@ -126,9 +126,9 @@ public class DeclarationService : IDeclarationService
 			string headSql = BuildInsertSql();
 			if (await _databaseHelper.ExecuteNonQueryAsync(headSql, headParameters) <= 0)
 			{
-				throw new Exception("±£´æÉêÇëµ¥±íÍ·Ê§°Ü");
+				throw new Exception("ä¿å­˜ç”³è¯·å•è¡¨å¤´å¤±è´¥");
 			}
-			_logger.LogInformation("ÉêÇëµ¥±íÍ·±£´æ³É¹¦£¬±àºÅ£º" + gateJobNo + "£¬ÓÃ»§£º" + user.Username);
+			_logger.LogInformation("ç”³è¯·å•è¡¨å¤´ä¿å­˜æˆåŠŸï¼Œç¼–å·ï¼š" + gateJobNo + "ï¼Œç”¨æˆ·ï¼š" + user.Username);
 			if (declaration.GoodsList != null && declaration.GoodsList.Count > 0)
 			{
 				foreach (DeclarationGoods goods in declaration.GoodsList)
@@ -162,28 +162,28 @@ public class DeclarationService : IDeclarationService
 					string bodySql = BuildBodyInsertSql();
 					if (await _databaseHelper.ExecuteNonQueryAsync(bodySql, bodyParameters) <= 0)
 					{
-						throw new Exception("±£´æÉÌÆ·±íÌåÊ§°Ü£¬ÏîºÅ£º" + goods.ItemNo);
+						throw new Exception("ä¿å­˜å•†å“è¡¨ä½“å¤±è´¥ï¼Œé¡¹å·ï¼š" + goods.ItemNo);
 					}
 				}
-				_logger.LogInformation($"ÉÌÆ·±íÌå±£´æ³É¹¦£¬¹²{declaration.GoodsList.Count}Ìõ¼ÇÂ¼£¬ÉêÇëµ¥±àºÅ£º{gateJobNo}");
+				_logger.LogInformation($"å•†å“è¡¨ä½“ä¿å­˜æˆåŠŸï¼Œå…±{declaration.GoodsList.Count}æ¡è®°å½•ï¼Œç”³è¯·å•ç¼–å·ï¼š{gateJobNo}");
 			}
 			try
 			{
 				await _vehicleService.CreateVehicleFromDeclarationAsync(declaration.CarNo, declaration.CarWeight, user.CompanyCode, user.CompanyName);
-				_logger.LogInformation("·Ç¿Õ³µºË·Åµ¥¹ØÁª³µÁ¾¼ì²éÍê³É£¬³µÅÆºÅ£º" + declaration.CarNo);
+				_logger.LogInformation("éç©ºè½¦æ ¸æ”¾å•å…³è”è½¦è¾†æ£€æŸ¥å®Œæˆï¼Œè½¦ç‰Œå·ï¼š" + declaration.CarNo);
 			}
 			catch (Exception exception)
 			{
-				_logger.LogWarning(exception, "×Ô¶¯´´½¨³µÁ¾ĞÅÏ¢Ê§°Ü£¬³µÅÆºÅ£º" + declaration.CarNo + "£¬µ«²»Ó°ÏìºË·Åµ¥±£´æ");
+				_logger.LogWarning(exception, "è‡ªåŠ¨åˆ›å»ºè½¦è¾†ä¿¡æ¯å¤±è´¥ï¼Œè½¦ç‰Œå·ï¼š" + declaration.CarNo + "ï¼Œä½†ä¸å½±å“æ ¸æ”¾å•ä¿å­˜");
 			}
-			_logger.LogInformation("·Ç¿Õ³µºË·Åµ¥±£´æÍê³É£¬±àºÅ£º" + gateJobNo + "£¬ÓÃ»§£º" + user.Username);
-			return ApiResponse<string>.Ok(gateJobNo, "±£´æ³É¹¦");
+			_logger.LogInformation("éç©ºè½¦æ ¸æ”¾å•ä¿å­˜å®Œæˆï¼Œç¼–å·ï¼š" + gateJobNo + "ï¼Œç”¨æˆ·ï¼š" + user.Username);
+			return ApiResponse<string>.Ok(gateJobNo, "ä¿å­˜æˆåŠŸ");
 		}
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"±£´æ·Ç¿Õ³µºË·Åµ¥Ê§°Ü£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<string>.Fail("±£´æÊ§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"ä¿å­˜éç©ºè½¦æ ¸æ”¾å•å¤±è´¥ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<string>.Fail("ä¿å­˜å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -194,7 +194,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<PagedResult<Declaration>>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<PagedResult<Declaration>>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			List<string> whereClauses = new List<string> { "TRADE_CODE = @TradeCode" };
 			Dictionary<string, object> parameters = new Dictionary<string, object> { ["TradeCode"] = user.CompanyCode };
@@ -246,8 +246,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"²éÑ¯ºË·Åµ¥ÁĞ±íÊ§°Ü£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<PagedResult<Declaration>>.Fail("²éÑ¯Ê§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"æŸ¥è¯¢æ ¸æ”¾å•åˆ—è¡¨å¤±è´¥ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<PagedResult<Declaration>>.Fail("æŸ¥è¯¢å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -258,7 +258,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<Declaration>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<Declaration>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			string sql = "SELECT * FROM HF_HEAD_PRE WHERE ID = @Id AND TRADE_CODE = @TradeCode";
 			Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -269,7 +269,7 @@ public class DeclarationService : IDeclarationService
 			DataTable result = await _databaseHelper.ExecuteQueryAsync(sql, parameters);
 			if (result.Rows.Count == 0)
 			{
-				return ApiResponse<Declaration>.Fail("ºË·Åµ¥²»´æÔÚ»òÎŞÈ¨ÏŞ·ÃÎÊ");
+				return ApiResponse<Declaration>.Fail("æ ¸æ”¾å•ä¸å­˜åœ¨æˆ–æ— æƒé™è®¿é—®");
 			}
 			Declaration declaration = MapDataRowToDeclaration(result.Rows[0]);
 			return ApiResponse<Declaration>.Ok(declaration);
@@ -277,8 +277,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"»ñÈ¡ºË·Åµ¥ÏêÇéÊ§°Ü£¬ID£º{id}£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<Declaration>.Fail("»ñÈ¡Ê§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"è·å–æ ¸æ”¾å•è¯¦æƒ…å¤±è´¥ï¼ŒIDï¼š{id}ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<Declaration>.Fail("è·å–å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -369,12 +369,12 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<string>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<string>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			string gatejobNo = await _jobNumberService.GetJobNumberAsync("FBG", user.CompanyCode, user.CustomsCode);
 			if (string.IsNullOrEmpty(gatejobNo))
 			{
-				return ApiResponse<string>.Fail("Éú³ÉÒµÎñµ¥ºÅÊ§°Ü");
+				return ApiResponse<string>.Fail("ç”Ÿæˆä¸šåŠ¡å•å·å¤±è´¥");
 			}
 			using (IDbConnection connection = _connectionFactory.CreateConnection())
 			{
@@ -389,14 +389,14 @@ public class DeclarationService : IDeclarationService
 						await SaveApplicationGoodsAsync(dbConnection, transaction, request.GoodsItems, gatejobNo);
 					}
 					await transaction.CommitAsync();
-					_logger.LogInformation("ÉêÇëµ¥±£´æ³É¹¦: " + gatejobNo);
-					return ApiResponse<string>.Ok(gatejobNo, "ÉêÇëµ¥±£´æ³É¹¦");
+					_logger.LogInformation("ç”³è¯·å•ä¿å­˜æˆåŠŸ: " + gatejobNo);
+					return ApiResponse<string>.Ok(gatejobNo, "ç”³è¯·å•ä¿å­˜æˆåŠŸ");
 				}
 				catch (Exception ex)
 				{
 					await transaction.RollbackAsync();
-					_logger.LogError(ex, "±£´æÉêÇëµ¥Ê§°Ü");
-					return ApiResponse<string>.Fail("±£´æÉêÇëµ¥Ê§°Ü: " + ex.Message);
+					_logger.LogError(ex, "ä¿å­˜ç”³è¯·å•å¤±è´¥");
+					return ApiResponse<string>.Fail("ä¿å­˜ç”³è¯·å•å¤±è´¥: " + ex.Message);
 				}
 			}
 			IL_05b6:
@@ -406,8 +406,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex2)
 		{
 			Exception ex3 = ex2;
-			_logger.LogError(ex3, "±£´æÉêÇëµ¥Ê§°Ü");
-			return ApiResponse<string>.Fail("±£´æÉêÇëµ¥Ê§°Ü: " + ex3.Message);
+			_logger.LogError(ex3, "ä¿å­˜ç”³è¯·å•å¤±è´¥");
+			return ApiResponse<string>.Fail("ä¿å­˜ç”³è¯·å•å¤±è´¥: " + ex3.Message);
 		}
 	}
 
@@ -418,7 +418,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<string>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<string>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			using (IDbConnection connection = _connectionFactory.CreateConnection())
 			{
@@ -430,7 +430,7 @@ public class DeclarationService : IDeclarationService
 					string applicationGatejobNo = await _jobNumberService.GetJobNumberAsync("LF", user.CompanyCode, user.CustomsCode);
 					if (string.IsNullOrEmpty(applicationGatejobNo))
 					{
-						return ApiResponse<string>.Fail("Éú³ÉÉêÇëµ¥ÒµÎñµ¥ºÅÊ§°Ü");
+						return ApiResponse<string>.Fail("ç”Ÿæˆç”³è¯·å•ä¸šåŠ¡å•å·å¤±è´¥");
 					}
 					await SaveApplicationHeaderAsync(dbConnection, transaction, applicationData.Header, applicationGatejobNo, user);
 					Dictionary<string, string> itemIdMapping = new Dictionary<string, string>();
@@ -442,14 +442,14 @@ public class DeclarationService : IDeclarationService
 					await SaveDeclarationHeaderAsync(dbConnection, transaction, declaration, user);
 					await SaveDeclarationBodyAsync(dbConnection, transaction, declaration, applicationData.GoodsItems ?? new List<GoodsItemDto>(), itemIdMapping, applicationGatejobNo);
 					await transaction.CommitAsync();
-					_logger.LogInformation("ÍêÕû·Ç¿ÕºË·Åµ¥±£´æ³É¹¦: " + dischargedNo);
-					return ApiResponse<string>.Ok(dischargedNo, "·Ç¿ÕºË·Åµ¥±£´æ³É¹¦");
+					_logger.LogInformation("å®Œæ•´éç©ºæ ¸æ”¾å•ä¿å­˜æˆåŠŸ: " + dischargedNo);
+					return ApiResponse<string>.Ok(dischargedNo, "éç©ºæ ¸æ”¾å•ä¿å­˜æˆåŠŸ");
 				}
 				catch (Exception ex)
 				{
 					await transaction.RollbackAsync();
-					_logger.LogError(ex, "±£´æÍêÕû·Ç¿ÕºË·Åµ¥Ê§°Ü");
-					return ApiResponse<string>.Fail("±£´æÍêÕû·Ç¿ÕºË·Åµ¥Ê§°Ü: " + ex.Message);
+					_logger.LogError(ex, "ä¿å­˜å®Œæ•´éç©ºæ ¸æ”¾å•å¤±è´¥");
+					return ApiResponse<string>.Fail("ä¿å­˜å®Œæ•´éç©ºæ ¸æ”¾å•å¤±è´¥: " + ex.Message);
 				}
 			}
 			IL_07c2:
@@ -459,8 +459,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex2)
 		{
 			Exception ex3 = ex2;
-			_logger.LogError(ex3, "±£´æÍêÕû·Ç¿ÕºË·Åµ¥Ê§°Ü");
-			return ApiResponse<string>.Fail("±£´æÍêÕû·Ç¿ÕºË·Åµ¥Ê§°Ü: " + ex3.Message);
+			_logger.LogError(ex3, "ä¿å­˜å®Œæ•´éç©ºæ ¸æ”¾å•å¤±è´¥");
+			return ApiResponse<string>.Fail("ä¿å­˜å®Œæ•´éç©ºæ ¸æ”¾å•å¤±è´¥: " + ex3.Message);
 		}
 	}
 
@@ -666,7 +666,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<PagedResult<UnifiedDeclarationListDto>>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<PagedResult<UnifiedDeclarationListDto>>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			List<string> whereClauses = new List<string> { "hh.TRADE_CODE = @CompanyCode" };
 			Dictionary<string, object> parameters = new Dictionary<string, object> { ["CompanyCode"] = user.CompanyCode };
@@ -725,8 +725,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"²éÑ¯µ¥Ò»Éê±¨ÁĞ±íÊ§°Ü£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<PagedResult<UnifiedDeclarationListDto>>.Fail("²éÑ¯Ê§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"æŸ¥è¯¢å•ä¸€ç”³æŠ¥åˆ—è¡¨å¤±è´¥ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<PagedResult<UnifiedDeclarationListDto>>.Fail("æŸ¥è¯¢å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -737,7 +737,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<UnifiedDeclarationDetailDto>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<UnifiedDeclarationDetailDto>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			UnifiedDeclarationDetailDto detail = new UnifiedDeclarationDetailDto();
 			string hfSql = "SELECT * FROM HF_HEAD_PRE\r\n                            WHERE DISCHARGED_NO = @DischargedNo AND TRADE_CODE = @CompanyCode";
@@ -749,7 +749,7 @@ public class DeclarationService : IDeclarationService
 			DataTable hfResult = await _databaseHelper.ExecuteQueryAsync(hfSql, hfParameters);
 			if (hfResult.Rows.Count == 0)
 			{
-				return ApiResponse<UnifiedDeclarationDetailDto>.Fail("ºË·Åµ¥²»´æÔÚ»òÎŞÈ¨ÏŞ·ÃÎÊ");
+				return ApiResponse<UnifiedDeclarationDetailDto>.Fail("æ ¸æ”¾å•ä¸å­˜åœ¨æˆ–æ— æƒé™è®¿é—®");
 			}
 			detail.DischargedInfo = MapDataRowToDeclaration(hfResult.Rows[0]);
 			string gatejobSql = "SELECT GATEJOB_NO FROM HF_BODY_PRE WHERE DISCHARGED_NO = @DischargedNo";
@@ -778,8 +778,8 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			_logger.LogError(ex2, $"»ñÈ¡µ¥Ò»Éê±¨ÏêÇéÊ§°Ü£¬ºË·Åµ¥ºÅ£º{dischargedNo}£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<UnifiedDeclarationDetailDto>.Fail("»ñÈ¡Ê§°Ü£º" + ex2.Message);
+			_logger.LogError(ex2, $"è·å–å•ä¸€ç”³æŠ¥è¯¦æƒ…å¤±è´¥ï¼Œæ ¸æ”¾å•å·ï¼š{dischargedNo}ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<UnifiedDeclarationDetailDto>.Fail("è·å–å¤±è´¥ï¼š" + ex2.Message);
 		}
 	}
 
@@ -790,7 +790,7 @@ public class DeclarationService : IDeclarationService
 			User user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				return ApiResponse<bool>.Fail("ÓÃ»§²»´æÔÚ");
+				return ApiResponse<bool>.Fail("ç”¨æˆ·ä¸å­˜åœ¨");
 			}
 			using (IDbConnection connection = _connectionFactory.CreateConnection())
 			{
@@ -843,17 +843,17 @@ public class DeclarationService : IDeclarationService
 					if (await deleteHfHeadCommand.ExecuteNonQueryAsync() <= 0)
 					{
 						await transaction.RollbackAsync();
-						return ApiResponse<bool>.Fail("É¾³ıÊ§°Ü£¬ºË·Åµ¥²»´æÔÚ»òÒÑÌá½»ÎŞ·¨É¾³ı");
+						return ApiResponse<bool>.Fail("åˆ é™¤å¤±è´¥ï¼Œæ ¸æ”¾å•ä¸å­˜åœ¨æˆ–å·²æäº¤æ— æ³•åˆ é™¤");
 					}
 					await transaction.CommitAsync();
-					_logger.LogInformation("µ¥Ò»Éê±¨É¾³ı³É¹¦£¬ºË·Åµ¥ºÅ£º" + dischargedNo + "£¬ÓÃ»§£º" + user.Username);
-					return ApiResponse<bool>.Ok(data: true, "É¾³ı³É¹¦");
+					_logger.LogInformation("å•ä¸€ç”³æŠ¥åˆ é™¤æˆåŠŸï¼Œæ ¸æ”¾å•å·ï¼š" + dischargedNo + "ï¼Œç”¨æˆ·ï¼š" + user.Username);
+					return ApiResponse<bool>.Ok(data: true, "åˆ é™¤æˆåŠŸ");
 				}
 				catch (Exception ex)
 				{
 					await transaction.RollbackAsync();
-					_logger.LogError(ex, "É¾³ıµ¥Ò»Éê±¨Ê§°Ü");
-					return ApiResponse<bool>.Fail("É¾³ıÊ§°Ü£º" + ex.Message);
+					_logger.LogError(ex, "åˆ é™¤å•ä¸€ç”³æŠ¥å¤±è´¥");
+					return ApiResponse<bool>.Fail("åˆ é™¤å¤±è´¥ï¼š" + ex.Message);
 				}
 			}
 			IL_0ae3:
@@ -863,48 +863,49 @@ public class DeclarationService : IDeclarationService
 		catch (Exception ex2)
 		{
 			Exception ex3 = ex2;
-			_logger.LogError(ex3, $"É¾³ıµ¥Ò»Éê±¨Ê§°Ü£¬ºË·Åµ¥ºÅ£º{dischargedNo}£¬ÓÃ»§ID£º{userId}");
-			return ApiResponse<bool>.Fail("É¾³ıÊ§°Ü£º" + ex3.Message);
+			_logger.LogError(ex3, $"åˆ é™¤å•ä¸€ç”³æŠ¥å¤±è´¥ï¼Œæ ¸æ”¾å•å·ï¼š{dischargedNo}ï¼Œç”¨æˆ·IDï¼š{userId}");
+			return ApiResponse<bool>.Fail("åˆ é™¤å¤±è´¥ï¼š" + ex3.Message);
 		}
 	}
 
-	private string BuildUnifiedDeclarationListSql(string whereClause)
+		private string BuildUnifiedDeclarationListSql(string whereClause)
 	{
-		string text = _connectionFactory.GetDatabaseProvider().ToLower();
-		if (text == "oracle")
+		string provider = _connectionFactory.GetDatabaseProvider().ToLower();
+		if (provider == "oracle")
 		{
-			return "SELECT * FROM (\r\n                    SELECT\r\n                        ROWNUM AS RN,\r\n                        ROW_NUMBER() OVER (ORDER BY MAX(hh.CREATE_DATE) DESC) AS ĞòºÅ,\r\n                        hh.DISCHARGED_NO AS ºË·Åµ¥ºÅ,\r\n                        hb.GATEJOB_NO AS ÉêÇëµ¥ºÅ,\r\n                        hh.CAR_NO AS ³µÅÆºÅÂë,\r\n                        LISTAGG(fbb.G_NO, ',') WITHIN GROUP (ORDER BY fbb.G_NO) AS ÏîºÅ,\r\n                        LISTAGG(fbb.G_NAME, ',') WITHIN GROUP (ORDER BY fbb.G_NO) AS »õÎïÆ·Ãû,\r\n                        CASE\r\n                            WHEN fh.I_E_MARK = '1' THEN '½ø¿Ú'\r\n                            WHEN fh.I_E_MARK = '2' THEN '³ö¿Ú'\r\n                            ELSE 'Î´Öª'\r\n                        END AS ½ø³ö±êÖ¾,\r\n                        MAX(hh.CREATE_DATE) AS Â¼ÈëÊ±¼ä,\r\n                        MAX(hh.DECLARE_DATE) AS Éê±¨Ê±¼ä,\r\n                        CASE\r\n                            WHEN hh.STEP_ID IN ('HFD100300','HFD100500','HFD100600') AND hh.PORT_STATUS IN ('K03','K08') THEN 'ÖÁ¿¨¿Ú'\r\n                            WHEN hh.STEP_ID IN ('HFD100500') THEN 'ÖÁ¿¨¿Ú'\r\n                            ELSE\r\n                                CASE\r\n                                    WHEN hh.STEP_ID IN ('HFD100500', 'HFD100600') THEN 'ÉóºËÍ¨¹ı'\r\n                                    ELSE NVL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'HFD' AND STEP_ID = hh.STEP_ID), hh.STEP_ID)\r\n                                END\r\n                        END AS ºË·Åµ¥×´Ì¬,\r\n                        CASE\r\n                            WHEN fh.STEP_ID = 'FBG100100' THEN 'Ôİ´æ'\r\n                            WHEN fh.STEP_ID = 'FBG100200' THEN 'ÒÑÉê±¨'\r\n                            WHEN fh.STEP_ID = 'FBG100300' THEN 'ÒÑÉóºË'\r\n                            ELSE NVL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'FBG' AND STEP_ID = fh.STEP_ID), fh.STEP_ID)\r\n                        END AS ÉêÇëµ¥×´Ì¬,\r\n                        MAX(hh.PORT_DATE) AS ¹ı¿¨Ê±¼ä,\r\n                        hh.FACT_WEIGHT AS ×ÜÖØÁ¿,\r\n                        hh.CAR_WT AS ³µÁ¾×ÔÖØ,\r\n                        (hh.FACT_WEIGHT - hh.CAR_WT) AS »õÎïÖØÁ¿,\r\n                        region.NAME AS ÇøÓò±êÖ¾,\r\n                        0 AS ºË·Åµ¥ID,\r\n                        0 AS ÉêÇëµ¥ID\r\n                    FROM HF_HEAD_PRE hh\r\n                    LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                    LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                    LEFT JOIN FBG_BODY_PRE fbb ON fh.GATEJOB_NO = fbb.GATEJOB_NO\r\n                    LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                    WHERE " + whereClause + "\r\n                    GROUP BY hh.DISCHARGED_NO, hb.GATEJOB_NO, hh.CAR_NO, fh.I_E_MARK,\r\n                             hh.STEP_ID, hh.PORT_STATUS, fh.STEP_ID,\r\n                             hh.FACT_WEIGHT, hh.CAR_WT, region.NAME\r\n                    ORDER BY MAX(hh.CREATE_DATE) DESC\r\n                ) WHERE RN > :Offset AND RN <= (:Offset + :PageSize)";
+			return "SELECT * FROM (\r\n                    SELECT\r\n                        ROWNUM AS RN,\r\n                        ROW_NUMBER() OVER (ORDER BY MAX(hh.CREATE_DATE) DESC) AS åºå·,\r\n                        hh.DISCHARGED_NO AS æ ¸æ”¾å•å·,\r\n                        hb.GATEJOB_NO AS ç”³è¯·å•å·,\r\n                        hh.CAR_NO AS è½¦ç‰Œå·ç ,\r\n                        LISTAGG(fbb.G_NO, ',') WITHIN GROUP (ORDER BY fbb.G_NO) AS é¡¹å·,\r\n                        LISTAGG(fbb.G_NAME, ',') WITHIN GROUP (ORDER BY fbb.G_NO) AS è´§ç‰©å“å,\r\n                        CASE\r\n                            WHEN fh.I_E_MARK = '1' THEN 'è¿›å£'\r\n                            WHEN fh.I_E_MARK = '2' THEN 'å‡ºå£'\r\n                            ELSE 'æœªçŸ¥'\r\n                        END AS è¿›å‡ºæ ‡å¿—,\r\n                        MAX(hh.CREATE_DATE) AS å½•å…¥æ—¶é—´,\r\n                        MAX(hh.DECLARE_DATE) AS ç”³æŠ¥æ—¶é—´,\r\n                        CASE\r\n                            WHEN hh.STEP_ID IN ('HFD100300','HFD100500','HFD100600') AND hh.PORT_STATUS IN ('K03','K08') THEN 'è‡³å¡å£'\r\n                            WHEN hh.STEP_ID IN ('HFD100500') THEN 'è‡³å¡å£'\r\n                            ELSE\r\n                                CASE\r\n                                    WHEN hh.STEP_ID IN ('HFD100500', 'HFD100600') THEN 'å®¡æ ¸é€šè¿‡'\r\n                                    ELSE NVL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'HFD' AND STEP_ID = hh.STEP_ID), hh.STEP_ID)\r\n                                END\r\n                        END AS æ ¸æ”¾å•çŠ¶æ€,\r\n                        CASE\r\n                            WHEN fh.STEP_ID = 'FBG100100' THEN 'æš‚å­˜'\r\n                            WHEN fh.STEP_ID = 'FBG100200' THEN 'å·²ç”³æŠ¥'\r\n                            WHEN fh.STEP_ID = 'FBG100300' THEN 'å·²å®¡æ ¸'\r\n                            ELSE NVL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'FBG' AND STEP_ID = fh.STEP_ID), fh.STEP_ID)\r\n                        END AS ç”³è¯·å•çŠ¶æ€,\r\n                        MAX(hh.PORT_DATE) AS è¿‡å¡æ—¶é—´,\r\n                        hh.FACT_WEIGHT AS æ€»é‡é‡,\r\n                        hh.CAR_WT AS è½¦è¾†è‡ªé‡,\r\n                        (hh.FACT_WEIGHT - hh.CAR_WT) AS è´§ç‰©é‡é‡,\r\n                        region.NAME AS åŒºåŸŸæ ‡å¿—,\r\n                        0 AS æ ¸æ”¾å•ID,\r\n                        0 AS ç”³è¯·å•ID\r\n                    FROM HF_HEAD_PRE hh\r\n                    LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                    LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                    LEFT JOIN FBG_BODY_PRE fbb ON fh.GATEJOB_NO = fbb.GATEJOB_NO\r\n                    LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                    WHERE " + whereClause + "\r\n                    GROUP BY hh.DISCHARGED_NO, hb.GATEJOB_NO, hh.CAR_NO, fh.I_E_MARK,\r\n                             hh.STEP_ID, hh.PORT_STATUS, fh.STEP_ID,\r\n                             hh.FACT_WEIGHT, hh.CAR_WT, region.NAME\r\n                    ORDER BY MAX(hh.CREATE_DATE) DESC\r\n                ) WHERE RN > :Offset AND RN <= (:Offset + :PageSize)";
 		}
-		return "SELECT\r\n                    ROW_NUMBER() OVER (ORDER BY MAX(hh.CREATE_DATE) DESC) AS ĞòºÅ,\r\n                    hh.DISCHARGED_NO AS ºË·Åµ¥ºÅ,\r\n                    hb.GATEJOB_NO AS ÉêÇëµ¥ºÅ,\r\n                    hh.CAR_NO AS ³µÅÆºÅÂë,\r\n                    STRING_AGG(CAST(fbb.G_NO AS VARCHAR), ',') AS ÏîºÅ,\r\n                    STRING_AGG(fbb.G_NAME, ',') AS »õÎïÆ·Ãû,\r\n                    CASE\r\n                        WHEN fh.I_E_MARK = '1' THEN '½ø¿Ú'\r\n                        WHEN fh.I_E_MARK = '2' THEN '³ö¿Ú'\r\n                        ELSE 'Î´Öª'\r\n                    END AS ½ø³ö±êÖ¾,\r\n                    MAX(hh.CREATE_DATE) AS Â¼ÈëÊ±¼ä,\r\n                    MAX(hh.DECLARE_DATE) AS Éê±¨Ê±¼ä,\r\n                    CASE\r\n                        WHEN hh.STEP_ID IN ('HFD100300','HFD100500','HFD100600') AND hh.PORT_STATUS IN ('K03','K08') THEN 'ÖÁ¿¨¿Ú'\r\n                        WHEN hh.STEP_ID IN ('HFD100500') THEN 'ÖÁ¿¨¿Ú'\r\n                        ELSE\r\n                            CASE\r\n                                WHEN hh.STEP_ID IN ('HFD100500', 'HFD100600') THEN 'ÉóºËÍ¨¹ı'\r\n                                ELSE ISNULL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'HFD' AND STEP_ID = hh.STEP_ID), hh.STEP_ID)\r\n                            END\r\n                    END AS ºË·Åµ¥×´Ì¬,\r\n                    CASE\r\n                        WHEN fh.STEP_ID = 'FBG100100' THEN 'Ôİ´æ'\r\n                        WHEN fh.STEP_ID = 'FBG100200' THEN 'ÒÑÉê±¨'\r\n                        WHEN fh.STEP_ID = 'FBG100300' THEN 'ÒÑÉóºË'\r\n                        ELSE ISNULL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'FBG' AND STEP_ID = fh.STEP_ID), fh.STEP_ID)\r\n                    END AS ÉêÇëµ¥×´Ì¬,\r\n                    MAX(hh.PORT_DATE) AS ¹ı¿¨Ê±¼ä,\r\n                    hh.FACT_WEIGHT AS ×ÜÖØÁ¿,\r\n                    hh.CAR_WT AS ³µÁ¾×ÔÖØ,\r\n                    (hh.FACT_WEIGHT - hh.CAR_WT) AS »õÎïÖØÁ¿,\r\n                    region.NAME AS ÇøÓò±êÖ¾,\r\n                    0 AS ºË·Åµ¥ID,\r\n                    0 AS ÉêÇëµ¥ID\r\n                FROM HF_HEAD_PRE hh\r\n                LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                LEFT JOIN FBG_BODY_PRE fbb ON fh.GATEJOB_NO = fbb.GATEJOB_NO\r\n                LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                WHERE " + whereClause + "\r\n                GROUP BY hh.DISCHARGED_NO, hb.GATEJOB_NO, hh.CAR_NO, fh.I_E_MARK,\r\n                         hh.STEP_ID, hh.PORT_STATUS, fh.STEP_ID,\r\n                         hh.FACT_WEIGHT, hh.CAR_WT, region.NAME\r\n                ORDER BY MAX(hh.CREATE_DATE) DESC\r\n                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+		return $"SELECT\r\n                    ROW_NUMBER() OVER (ORDER BY MAX(hh.CREATE_DATE) DESC) AS [åºå·],\r\n                    hh.DISCHARGED_NO AS [æ ¸æ”¾å•å·],\r\n                    hb.GATEJOB_NO AS [ç”³è¯·å•å·],\r\n                    hh.CAR_NO AS [è½¦ç‰Œå·ç ],\r\n                    ISNULL(MAX(goodsAgg.ItemNos), '') AS [é¡¹å·],\r\n                    ISNULL(MAX(goodsAgg.GoodsNames), '') AS [è´§ç‰©å“å],\r\n                    CASE\r\n                        WHEN fh.I_E_MARK = '1' THEN N'è¿›å£'\r\n                        WHEN fh.I_E_MARK = '2' THEN N'å‡ºå£'\r\n                        ELSE N'æœªçŸ¥'\r\n                    END AS [è¿›å‡ºæ ‡å¿—],\r\n                    MAX(hh.CREATE_DATE) AS [å½•å…¥æ—¶é—´],\r\n                    MAX(hh.DECLARE_DATE) AS [ç”³æŠ¥æ—¶é—´],\r\n                    CASE\r\n                        WHEN hh.STEP_ID IN ('HFD100300','HFD100500','HFD100600') AND hh.PORT_STATUS IN ('K03','K08') THEN N'è‡³å¡å£'\r\n                        WHEN hh.STEP_ID IN ('HFD100500') THEN N'è‡³å¡å£'\r\n                        ELSE\r\n                            CASE\r\n                                WHEN hh.STEP_ID IN ('HFD100500', 'HFD100600') THEN N'å®¡æ ¸é€šè¿‡'\r\n                                ELSE ISNULL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'HFD' AND STEP_ID = hh.STEP_ID), hh.STEP_ID)\r\n                            END\r\n                    END AS [æ ¸æ”¾å•çŠ¶æ€],\r\n                    CASE\r\n                        WHEN fh.STEP_ID = 'FBG100100' THEN N'æš‚å­˜'\r\n                        WHEN fh.STEP_ID = 'FBG100200' THEN N'å·²ç”³æŠ¥'\r\n                        WHEN fh.STEP_ID = 'FBG100300' THEN N'å·²å®¡æ ¸'\r\n                        ELSE ISNULL((SELECT MAX(STEP_NAME) FROM SYS_STEP_PARAMETERS WHERE WORKFLOW_TYPE = 'FBG' AND STEP_ID = fh.STEP_ID), fh.STEP_ID)\r\n                    END AS [ç”³è¯·å•çŠ¶æ€],\r\n                    MAX(hh.PORT_DATE) AS [è¿‡å¡æ—¶é—´],\r\n                    hh.FACT_WEIGHT AS [æ€»é‡é‡],\r\n                    hh.CAR_WT AS [è½¦è¾†è‡ªé‡],\r\n                    (hh.FACT_WEIGHT - hh.CAR_WT) AS [è´§ç‰©é‡é‡],\r\n                    region.NAME AS [åŒºåŸŸæ ‡å¿—],\r\n                    0 AS [æ ¸æ”¾å•ID],\r\n                    0 AS [ç”³è¯·å•ID]\r\n                FROM HF_HEAD_PRE hh\r\n                LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                OUTER APPLY (\r\n                    SELECT\r\n                        ItemNos = STUFF((\r\n                            SELECT ',' + CAST(fbbInner.G_NO AS NVARCHAR(50))\r\n                            FROM FBG_BODY_PRE fbbInner\r\n                            WHERE fbbInner.GATEJOB_NO = hb.GATEJOB_NO\r\n                            FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, ''),\r\n                        GoodsNames = STUFF((\r\n                            SELECT ',' + CAST(fbbInner.G_NAME AS NVARCHAR(4000))\r\n                            FROM FBG_BODY_PRE fbbInner\r\n                            WHERE fbbInner.GATEJOB_NO = hb.GATEJOB_NO\r\n                            FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '')\r\n                ) goodsAgg\r\n                LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                WHERE {whereClause}\r\n                GROUP BY hh.DISCHARGED_NO, hb.GATEJOB_NO, hh.CAR_NO, fh.I_E_MARK, hh.STEP_ID, hh.PORT_STATUS, fh.STEP_ID, hh.FACT_WEIGHT, hh.CAR_WT, region.NAME\r\n                ORDER BY MAX(hh.CREATE_DATE) DESC\r\n                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 	}
 
 	private string BuildUnifiedDeclarationCountSql(string whereClause)
 	{
-		return "SELECT COUNT(DISTINCT hh.DISCHARGED_NO) AS TotalCount\r\n                FROM HF_HEAD_PRE hh\r\n                LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                LEFT JOIN FBG_BODY_PRE fbb ON fh.GATEJOB_NO = fbb.GATEJOB_NO\r\n                LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                WHERE " + whereClause;
+		return "SELECT COUNT(DISTINCT hh.DISCHARGED_NO) AS TotalCount\r\n                FROM HF_HEAD_PRE hh\r\n                LEFT JOIN HF_BODY_PRE hb ON hh.DISCHARGED_NO = hb.DISCHARGED_NO\r\n                LEFT JOIN FBG_HEAD_PRE fh ON hb.GATEJOB_NO = fh.GATEJOB_NO\r\n                LEFT JOIN BASE_REGION region ON region.CODE = hh.AREA_CODE\r\n                WHERE " + whereClause;
 	}
 
 	private UnifiedDeclarationListDto MapDataRowToUnifiedDeclarationListDto(DataRow row)
 	{
 		return new UnifiedDeclarationListDto
 		{
-			SerialNumber = Convert.ToInt32(row["ĞòºÅ"] ?? ((object)0)),
-			DischargedNo = (row["ºË·Åµ¥ºÅ"]?.ToString() ?? string.Empty),
-			ApplicationNo = (row["ÉêÇëµ¥ºÅ"]?.ToString() ?? string.Empty),
-			CarNo = (row["³µÅÆºÅÂë"]?.ToString() ?? string.Empty),
-			ItemNos = (row["ÏîºÅ"]?.ToString() ?? string.Empty),
-			GoodsNames = (row["»õÎïÆ·Ãû"]?.ToString() ?? string.Empty),
-			IEMark = (row["½ø³ö±êÖ¾"]?.ToString() ?? string.Empty),
-			CreateTime = ((row["Â¼ÈëÊ±¼ä"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["Â¼ÈëÊ±¼ä"]))),
-			DeclareTime = ((row["Éê±¨Ê±¼ä"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["Éê±¨Ê±¼ä"]))),
-			DischargedStatus = (row["ºË·Åµ¥×´Ì¬"]?.ToString() ?? string.Empty),
-			ApplicationStatus = (row["ÉêÇëµ¥×´Ì¬"]?.ToString() ?? string.Empty),
-			PortTime = ((row["¹ı¿¨Ê±¼ä"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["¹ı¿¨Ê±¼ä"]))),
-			TotalWeight = Convert.ToDecimal(row["×ÜÖØÁ¿"] ?? ((object)0)),
-			CarWeight = Convert.ToDecimal(row["³µÁ¾×ÔÖØ"] ?? ((object)0)),
-			GoodsWeight = Convert.ToDecimal(row["»õÎïÖØÁ¿"] ?? ((object)0)),
-			AreaName = (row["ÇøÓò±êÖ¾"]?.ToString() ?? string.Empty),
-			DischargedId = Convert.ToInt32(row["ºË·Åµ¥ID"] ?? ((object)0)),
-			ApplicationId = Convert.ToInt32(row["ÉêÇëµ¥ID"] ?? ((object)0))
+			SerialNumber = Convert.ToInt32(row["åºå·"] ?? ((object)0)),
+			DischargedNo = (row["æ ¸æ”¾å•å·"]?.ToString() ?? string.Empty),
+			ApplicationNo = (row["ç”³è¯·å•å·"]?.ToString() ?? string.Empty),
+			CarNo = (row["è½¦ç‰Œå·ç "]?.ToString() ?? string.Empty),
+			ItemNos = (row["é¡¹å·"]?.ToString() ?? string.Empty),
+			GoodsNames = (row["è´§ç‰©å“å"]?.ToString() ?? string.Empty),
+			IEMark = (row["è¿›å‡ºæ ‡å¿—"]?.ToString() ?? string.Empty),
+			CreateTime = ((row["å½•å…¥æ—¶é—´"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["å½•å…¥æ—¶é—´"]))),
+			DeclareTime = ((row["ç”³æŠ¥æ—¶é—´"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["ç”³æŠ¥æ—¶é—´"]))),
+			DischargedStatus = (row["æ ¸æ”¾å•çŠ¶æ€"]?.ToString() ?? string.Empty),
+			ApplicationStatus = (row["ç”³è¯·å•çŠ¶æ€"]?.ToString() ?? string.Empty),
+			PortTime = ((row["è¿‡å¡æ—¶é—´"] == DBNull.Value) ? ((DateTime?)null) : new DateTime?(Convert.ToDateTime(row["è¿‡å¡æ—¶é—´"]))),
+			TotalWeight = Convert.ToDecimal(row["æ€»é‡é‡"] ?? ((object)0)),
+			CarWeight = Convert.ToDecimal(row["è½¦è¾†è‡ªé‡"] ?? ((object)0)),
+			GoodsWeight = Convert.ToDecimal(row["è´§ç‰©é‡é‡"] ?? ((object)0)),
+			AreaName = (row["åŒºåŸŸæ ‡å¿—"]?.ToString() ?? string.Empty),
+			DischargedId = Convert.ToInt32(row["æ ¸æ”¾å•ID"] ?? ((object)0)),
+			ApplicationId = Convert.ToInt32(row["ç”³è¯·å•ID"] ?? ((object)0))
 		};
 	}
 
@@ -952,3 +953,5 @@ public class DeclarationService : IDeclarationService
 		};
 	}
 }
+
+
