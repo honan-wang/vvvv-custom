@@ -77,9 +77,11 @@ builder.Services.Configure<AuthenticationSettings>(
 // 注册数据库相关服务
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 builder.Services.AddScoped<DatabaseHelper>();
+builder.Services.AddHttpContextAccessor();
 
 // 注册业务服务
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ISystemParameterService, SystemParameterService>();
